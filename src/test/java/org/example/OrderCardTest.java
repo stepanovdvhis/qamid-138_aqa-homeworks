@@ -32,8 +32,6 @@ public class OrderCardTest {
         options.addArguments("--no-first-run");
         options.addArguments("--no-default-browser-check");
 
-        // Если передан флаг -Dheadless=true, запускаем без графического интерфейса.
-        // Нужен для запуска в CI (GitHub Actions) или на серверах без дисплея.
         if (Boolean.parseBoolean(System.getProperty("headless", "false"))) {
             options.addArguments("--headless=new");
             options.addArguments("--disable-gpu");
@@ -88,7 +86,7 @@ public class OrderCardTest {
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
         assertTrue(error.isDisplayed());
-        assertEquals("Имя и фамилия могут содержать только русские буквы, пробел или дефис",
+        assertEquals("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.",
                 error.getText().trim());
     }
 
@@ -108,13 +106,13 @@ public class OrderCardTest {
     @DisplayName("Некорректный телефон — ошибка")
     public void shouldShowErrorForInvalidPhone() {
         driver.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Иванов Иван");
-        driver.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("89991234567");
+        driver.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("12345");
         driver.findElement(By.cssSelector("[data-test-id='agreement']")).click();
         driver.findElement(By.cssSelector("button.button")).click();
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
         assertTrue(error.isDisplayed());
-        assertEquals("Телефон должен содержать 11 цифр и начинаться с +",
+        assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.",
                 error.getText().trim());
     }
 
