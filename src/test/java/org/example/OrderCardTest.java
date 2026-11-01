@@ -32,9 +32,9 @@ public class OrderCardTest {
         options.addArguments("--no-first-run");
         options.addArguments("--no-default-browser-check");
 
-        // На Linux (CI) обязательно нужен headless — там нет графического дисплея
-        String os = System.getProperty("os.name").toLowerCase();
-        if (os.contains("linux")) {
+        // Если передан флаг -Dheadless=true, запускаем без графического интерфейса.
+        // Нужен для запуска в CI (GitHub Actions) или на серверах без дисплея.
+        if (Boolean.parseBoolean(System.getProperty("headless", "false"))) {
             options.addArguments("--headless=new");
             options.addArguments("--disable-gpu");
             options.addArguments("--window-size=1920,1080");
@@ -62,6 +62,8 @@ public class OrderCardTest {
 
         WebElement success = driver.findElement(By.cssSelector("[data-test-id='order-success']"));
         assertTrue(success.isDisplayed(), "Сообщение об успехе должно отображаться");
+        assertEquals("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.",
+                success.getText().trim());
     }
 
     @Test
@@ -73,6 +75,7 @@ public class OrderCardTest {
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
         assertTrue(error.isDisplayed());
+        assertEquals("Поле обязательно для заполнения", error.getText().trim());
     }
 
     @Test
@@ -85,6 +88,8 @@ public class OrderCardTest {
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub"));
         assertTrue(error.isDisplayed());
+        assertEquals("Имя и фамилия могут содержать только русские буквы, пробел или дефис",
+                error.getText().trim());
     }
 
     @Test
@@ -96,6 +101,7 @@ public class OrderCardTest {
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
         assertTrue(error.isDisplayed());
+        assertEquals("Поле обязательно для заполнения", error.getText().trim());
     }
 
     @Test
@@ -108,6 +114,8 @@ public class OrderCardTest {
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub"));
         assertTrue(error.isDisplayed());
+        assertEquals("Телефон должен содержать 11 цифр и начинаться с +",
+                error.getText().trim());
     }
 
     @Test
@@ -119,5 +127,7 @@ public class OrderCardTest {
 
         WebElement error = driver.findElement(By.cssSelector("[data-test-id='agreement'].input_invalid .checkbox__text"));
         assertTrue(error.isDisplayed());
+        assertEquals("Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй",
+                error.getText().trim());
     }
 }
